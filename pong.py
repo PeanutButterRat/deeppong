@@ -116,9 +116,10 @@ class Pong:
         if not pygame.get_init():
             pygame.init()
 
-        self.score_font = pygame.font.Font(SCORE_FONT_FILEPATH, FPS_SIZE)
+        self.fps_font = pygame.font.Font(SCORE_FONT_FILEPATH, FPS_SIZE)
         self.current_renderer = 0
         self.renderers = [RasterizedRenderer(self)]
+        self.renderer_names = ['Default (Rasterized)']
         self.sounds = []
         self.bounce_sound = None
         self.score_sound = None
@@ -238,9 +239,11 @@ class Pong:
         surface = pygame.transform.scale(surface, self.screen.get_size())
         self.screen.blit(surface, (0, 0))
 
-        # Render the FPS to see the peformance in real-time.
+        # Render the FPS and renderer name to evaluate the peformance in real-time.
         if self.show_fps:
-            fps = self.score_font.render(str(round(self.clock.get_fps())), False, WHITE)
+            fps = round(self.clock.get_fps())
+            text = f'FPS: {fps:02} - {self.renderer_names[self.current_renderer]}'
+            fps = self.fps_font.render(text, False, WHITE)
             self.screen.blit(fps, (FPS_PADDING, FPS_PADDING))
 
         pygame.display.flip()
@@ -300,8 +303,9 @@ class Pong:
 
         pygame.quit()
 
-    def add_renderer(self, renderer):
+    def add_renderer(self, renderer, name):
         self.renderers.append(renderer)
+        self.renderer_names.append(name)
 
 
 class Renderer:
@@ -423,12 +427,14 @@ class ConvolutionalRenderer(DeepLearningRenderer):
 def main():
     '''The complete Pong application (models must be generated ahead of time).'''
     pong = Pong()
-    fcnn_renderers = [FullyConnectedRenderer(pong, filepath) for filepath in FCNN_BEST_FILEPATHS]
-    rnn_renderers = [RecurrentRenderer(pong, filepath) for filepath in RNN_BEST_FILEPATHS]
-    cnn_renderers = [ConvolutionalRenderer(pong, filepath) for filepath in CNN_BEST_FILEPATHS]
 
-    for renderer in fcnn_renderers + rnn_renderers + cnn_renderers:
-        pong.add_renderer(renderer)
+    # Add all the best trained models as renderers.
+    pong.add_renderer(FullyConnectedRenderer(pong, FCNN_BEST_FILEPATHS[0]), 'FCNN (Best F1-Score)')
+    pong.add_renderer(FullyConnectedRenderer(pong, FCNN_BEST_FILEPATHS[1]), 'FCNN (Best Latency)')
+    pong.add_renderer(RecurrentRenderer(pong, RNN_BEST_FILEPATHS[0]), 'RNN (Best F1-Score)')
+    pong.add_renderer(RecurrentRenderer(pong, RNN_BEST_FILEPATHS[1]), 'RNN (Best Latency)')
+    pong.add_renderer(ConvolutionalRenderer(pong, CNN_BEST_FILEPATHS[0]), 'CNN (Best F1-Score)')
+    pong.add_renderer(ConvolutionalRenderer(pong, CNN_BEST_FILEPATHS[1]), 'CNN (Best Latency)')
 
     pong.run()
 
