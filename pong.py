@@ -248,7 +248,7 @@ class Pong:
 
         pygame.display.flip()
 
-    def capture(self, screenshot=True):
+    def capture(self, screenshot=True, renderer=0):
         '''Returns the normalized game state and current frame.'''
 
         state = np.array([
@@ -258,7 +258,7 @@ class Pong:
             self.p1.score / SCORE_TO_WIN, self.p2.score / SCORE_TO_WIN,
         ])
 
-        return (state, self.renderers[0].render().copy()) if screenshot else state
+        return (state, self.renderers[renderer].render().copy()) if screenshot else state
 
     def tick(self):
         '''Ticks the in-game clock.'''
@@ -424,11 +424,10 @@ class ConvolutionalRenderer(DeepLearningRenderer):
         return self.model.predict(input, verbose=0)
 
 
-def main():
-    '''The complete Pong application (models must be generated ahead of time).'''
-    pong = Pong()
+def create_pong():
+    '''Creates an instance of Pong along with all the different deep-learning renderers.'''
 
-    # Add all the best trained models as renderers.
+    pong = Pong()
     pong.add_renderer(FullyConnectedRenderer(pong, FCNN_BEST_FILEPATHS[0]), 'FCNN (Best F1-Score)')
     pong.add_renderer(FullyConnectedRenderer(pong, FCNN_BEST_FILEPATHS[1]), 'FCNN (Best Latency)')
     pong.add_renderer(RecurrentRenderer(pong, RNN_BEST_FILEPATHS[0]), 'RNN (Best F1-Score)')
@@ -436,6 +435,13 @@ def main():
     pong.add_renderer(ConvolutionalRenderer(pong, CNN_BEST_FILEPATHS[0]), 'CNN (Best F1-Score)')
     pong.add_renderer(ConvolutionalRenderer(pong, CNN_BEST_FILEPATHS[1]), 'CNN (Best Latency)')
 
+    return pong
+
+
+def main():
+    '''The complete Pong application (models must be generated ahead of time).'''
+
+    pong = create_pong()
     pong.run()
 
 
