@@ -68,6 +68,8 @@ SPREADSHEET_FILEPATH = f'{DATA_DIRECTORY_NAME}/data.csv'
 FCNN_SCORE_FILENAME = 'fnn_best_score.keras'
 FCNN_LATENCY_FILENAME = 'fnn_best_latency.keras'
 FCNN_BEST_FILEPATHS = [f'{BEST_MODEL_DIRECTORY_PATH}/{filename}' for filename in [FCNN_SCORE_FILENAME, FCNN_LATENCY_FILENAME]]
+FCNN_FINETUNED_FILENAME = 'fnn_finetuned.keras'
+FCNN_FINETUNED_FILEPATH = f'{BEST_MODEL_DIRECTORY_PATH}/{FCNN_FINETUNED_FILENAME}'
 
 RNN_SCORE_FILENAME = 'rnn_best_score.keras'
 RNN_LATENCY_FILENAMES = 'rnn_best_latency.keras'
@@ -434,6 +436,7 @@ def create_pong():
     pong.add_renderer(RecurrentRenderer(pong, RNN_BEST_FILEPATHS[1]), 'RNN (Best Latency)')
     pong.add_renderer(ConvolutionalRenderer(pong, CNN_BEST_FILEPATHS[0]), 'CNN (Best F1-Score)')
     pong.add_renderer(ConvolutionalRenderer(pong, CNN_BEST_FILEPATHS[1]), 'CNN (Best Latency)')
+    pong.add_renderer(FullyConnectedRenderer(pong, FCNN_FINETUNED_FILEPATH), 'FCNN (Fine-tuned)')
 
     return pong
 
