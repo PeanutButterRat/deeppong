@@ -125,6 +125,7 @@ class Pong:
         self.sounds = []
         self.bounce_sound = None
         self.score_sound = None
+        self.clamped = False
 
         # Sound can be disabled if the environment doesn't support sound or the dataset is being generated.
         if sound_enabled:
@@ -297,6 +298,8 @@ class Pong:
                         self.current_renderer = event.key - pygame.K_1
                     elif event.key == pygame.K_f:
                         self.show_fps = not self.show_fps
+                    elif event.key == pygame.K_c:
+                        self.clamped = not self.clamped
 
             self.update(dt)
             self.refresh()
@@ -365,11 +368,15 @@ class DeepLearningRenderer(Renderer):
     def __init__(self, pong, model):
         super().__init__(pong)
         self.model = keras.models.load_model(model)
+        self.pong = pong
 
     def render(self):
         frame = self.predict()
 
         # Reshape and size the prediction in the correct format.
+        if self.pong.clamped:
+            frame = np.round(frame)
+
         frame = frame.reshape((SCREEN_HEIGHT, SCREEN_WIDTH))
         frame = (frame * 255).astype(np.uint8)
         frame = np.stack([frame] * 3, axis=-1)
