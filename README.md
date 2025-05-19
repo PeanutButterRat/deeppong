@@ -32,7 +32,7 @@
 
 
 ## About The Project
-DeepPong was my final project for CSC 296S: Deep Learning at California State University, Sacramento. In this project, I explore the possibility of using neural networks to replace the traditional rasterization pipeline to render computer graphics in real time.
+DeepPong was my final submission for CSC 296S: Deep Learning at California State University, Sacramento. In this project, I explore the possibility of using neural networks to replace the traditional rasterization pipeline for rendering computer graphics in real time. For a more in-depth overview of the entire project, please see the accompanying [paper](/paper.pdf) written for this project (`paper.pdf`).
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
